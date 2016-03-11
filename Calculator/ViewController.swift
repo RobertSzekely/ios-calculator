@@ -14,7 +14,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var display: UILabel!
     
     var userTouchedButtonBefore = false
+    
     var userCanInsertPoint = true
+    
+    var brain = CalculatorBrain()
 
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
@@ -40,14 +43,15 @@ class ViewController: UIViewController {
         display.text = "3.1415926535"
         enter()
     }
-  
-    var operandStack = Array<Double>()
     
     @IBAction func enter() {
         userTouchedButtonBefore = false
         userCanInsertPoint = true
-        operandStack.append(displayValue)
-        print("operandStack = \(operandStack)")
+        if let result = brain.pushOperand(displayValue) {
+            displayValue = result
+        } else {
+            displayValue = 0
+        }
     }
     
     @IBAction func clearScreen(sender: UIButton) {
@@ -59,36 +63,19 @@ class ViewController: UIViewController {
         display.text = "0"
         userTouchedButtonBefore = false
         userCanInsertPoint = true
-        operandStack.removeAll()
-        print("operandStack = \(operandStack)")
+        brain.clearStack()
     }
 
     @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
         if userTouchedButtonBefore {
             enter()
         }
-        switch operation {
-        case "✕": performOperation { $0 * $1 }
-        case "÷": performOperation { $1 / $0 }
-        case "+": performOperation { $0 + $1 }
-        case "-": performOperation { $1 - $0 }
-        case "√": performSimpleOperation { sqrt($0)}
-        case "sin": performSimpleOperation{ sin($0)}
-        case "cos": performSimpleOperation{ cos($0)}
-        default: break
-        }
-    }
-    func performOperation(operation: (Double, Double) -> Double) {
-        if operandStack.count >= 2 {
-            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
-            enter()
-        }
-    }
-    func performSimpleOperation(operation: Double -> Double) {
-        if operandStack.count >= 1 {
-            displayValue = operation(operandStack.removeLast())
-            enter()
+        if let operation = sender.currentTitle {
+            if let result = brain.performOperantion(operation) {
+                displayValue = result
+            } else {
+                displayValue = 0
+            }
         }
     }
 
