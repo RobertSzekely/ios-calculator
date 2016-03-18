@@ -17,8 +17,13 @@ class ViewController: UIViewController {
     
     var userCanInsertPoint = true
     
+    var signtButtounTouchedBefore = false
+    
+    var displayBeforeSignChange = ""
+    
     var brain = CalculatorBrain()
 
+    //adds digits to the display
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
         //print("digit = \(digit)")
@@ -32,6 +37,18 @@ class ViewController: UIViewController {
         } else if digit != "." {
             userTouchedButtonBefore = true
             display.text = digit
+        }
+        displayBeforeSignChange = display.text!
+        
+    }
+    @IBAction func changeSign(sender: UIButton) {
+
+        if !signtButtounTouchedBefore {
+            display.text = "-" + display.text!
+            signtButtounTouchedBefore = true
+        } else {
+            display.text = displayBeforeSignChange
+            signtButtounTouchedBefore = false
         }
         
     }
@@ -47,6 +64,7 @@ class ViewController: UIViewController {
     @IBAction func enter() {
         userTouchedButtonBefore = false
         userCanInsertPoint = true
+        signtButtounTouchedBefore = false
         if let result = brain.pushOperand(displayValue) {
             displayValue = result
         } else {
@@ -54,6 +72,7 @@ class ViewController: UIViewController {
         }
     }
     
+    //resets the calculator (clears display, numbers saved on stack, etc.)
     @IBAction func clearScreen(sender: UIButton) {
         display.text = "0"
         userTouchedButtonBefore = false
@@ -75,6 +94,7 @@ class ViewController: UIViewController {
         }
     }
 
+    
     var displayValue: Double {
         get {
             return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
