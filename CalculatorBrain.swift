@@ -10,6 +10,7 @@ import Foundation
 
 class CalculatorBrain
 {
+    
     private enum Op: CustomStringConvertible
     {
         case Operand(Double)
@@ -45,6 +46,25 @@ class CalculatorBrain
         knownOps["cos"] = Op.UnaryOperation("cos") { cos($0) }
         knownOps["sin"] = Op.UnaryOperation("sin") { sin($0) }
         
+    }
+    
+    var program : AnyObject { //guaranteed to be a PropertyList
+        get {
+            return opStack.map { $0.description } //converts every single thing in opStack(which are ops) into a string, and maps them all and returns a new array
+        }
+        set {
+            if let opSymbols = newValue as? Array<String> {
+                var newOpStack = [Op]()
+                for opSymbol in opSymbols {
+                    if let op = knownOps[opSymbol] {
+                        newOpStack.append(op)
+                    } else if let operand = NSNumberFormatter().numberFromString(opSymbol)?.doubleValue {
+                        newOpStack.append(.Operand(operand))
+                    }
+                }
+                opStack = newOpStack
+            }
+        }
     }
     
     private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op])

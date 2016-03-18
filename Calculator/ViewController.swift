@@ -58,13 +58,9 @@ class ViewController: UIViewController {
         display.text = "0"
         userTouchedButtonBefore = false
         userCanInsertPoint = true
-    }
-    @IBAction func clearAll(sender: UIButton) {
-        display.text = "0"
-        userTouchedButtonBefore = false
-        userCanInsertPoint = true
         brain.clearStack()
     }
+    
 
     @IBAction func operate(sender: UIButton) {
         if userTouchedButtonBefore {
